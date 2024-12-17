@@ -270,25 +270,29 @@ var (
 )
 
 func healthHandler(w http.ResponseWriter, req *http.Request) {
-	if req.Method == http.MethodPost {
-		var statusCode int
-
-		if err := json.NewDecoder(req.Body).Decode(&statusCode); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+	if req.Method == http.MethodGet { // Only respond with 200 OK for GET
+			mutexHealthState.RLock()
+			defer mutexHealthState.RUnlock()
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("OK"))
 			return
-		}
+	}
 
-		fmt.Printf("Update health check status code [%d]\n", statusCode)
+	// POST logic to update health status
+	if req.Method == http.MethodPost {
+			var statusCode int
+			if err := json.NewDecoder(req.Body).Decode(&statusCode); err != nil {
+					http.Error(w, err.Error(), http.StatusBadRequest)
+					return
+			}
+			fmt.Printf("Update health check status code [%d]\n", statusCode)
 
-		mutexHealthState.Lock()
-		defer mutexHealthState.Unlock()
-		currentHealthState.StatusCode = statusCode
-	} else {
-		mutexHealthState.RLock()
-		defer mutexHealthState.RUnlock()
-		w.WriteHeader(currentHealthState.StatusCode)
+			mutexHealthState.Lock()
+			defer mutexHealthState.Unlock()
+			currentHealthState.StatusCode = statusCode
 	}
 }
+
 
 func fillContent(length int64) io.ReadSeeker {
 	charset := "-ABCDEFGHIJKLMNOPQRSTUVWXYZ"
