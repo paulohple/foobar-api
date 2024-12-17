@@ -15,16 +15,20 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Set Image Tag
+        id: vars
+        run: echo "TAG=$(date +%Y%m%d%H%M%S)-${{ github.sha }}" >> $GITHUB_ENV
+
       - name: Login to Vultr Registry
         run: echo "${{ secrets.VULTR_PASSWORD }}" | docker login sjc.vultrcr.com -u "${{ secrets.VULTR_USERNAME }}" --password-stdin
 
       - name: Build Docker Image
         run: |
-          docker build -t sjc.vultrcr.com/globalregistry/foobar-api:latest .
+          docker build -t sjc.vultrcr.com/globalregistry/foobar-api:${{ env.TAG }} .
 
       - name: Push Docker Image to Registry
         run: |
-          docker push sjc.vultrcr.com/globalregistry/foobar-api:latest
+          docker push sjc.vultrcr.com/globalregistry/foobar-api:${{ env.TAG }}
 
   deploy:
     name: Deploy to ArgoCD
@@ -35,85 +39,90 @@ jobs:
       - name: Checkout Manifests
         uses: actions/checkout@v4
 
-      - name: Update Image in Manifests
+      - name: Update Kustomize Image Tag for eu-west-cluster
         run: |
-          sed -i 's|image:.*|image: sjc.vultrcr.com/globalregistry/foobar-api:latest|' app-eu-west.yaml
-          sed -i 's|image:.*|image: sjc.vultrcr.com/globalregistry/foobar-api:latest|' app-us-east.yaml
+          cd kustomize/overlays/eu-west-cluster
+          kustomize edit set image sjc.vultrcr.com/globalregistry/foobar-api:${{ env.TAG }}
+
+      - name: Update Kustomize Image Tag for us-east-cluster
+        run: |
+          cd kustomize/overlays/us-east-cluster
+          kustomize edit set image sjc.vultrcr.com/globalregistry/foobar-api:${{ env.TAG }}
 
       - name: Commit and Push Changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Update image to latest for foobar-api"
-          file_pattern: "app-eu-west.yaml app-us-east.yaml"
+          commit_message: "Update image to tag ${{ env.TAG }} for foobar-api"
+          file_pattern: "kustomize/overlays/region1/kustomization.yaml kustomize/overlays/region2/kustomization.yaml"
 
-      - name: Ensure ArgoCD Application for vke-00e1b5e2
+      - name: Ensure ArgoCD Application for eu-west-cluster
         run: |
-          curl -k --fail -X POST ${{ secrets.ARGOCD_SERVER }}/api/v1/applications \
-          -H "Authorization: Bearer ${{ secrets.ARGOCD_AUTH_TOKEN }}" \
-          -H "Content-Type: application/json" \
-              -d '{
-            "metadata": {
-              "name": "foobar-api-us-east",
-              "namespace": "argo"
-            },
-            "spec": {
-              "project": "default",
-              "source": {
-                "repoURL": "git@github.com:paulohple/foobar-api.git",
-                "targetRevision": "HEAD",
-                "path": "kustomize/overlays/us-east-cluster"
-              },
-              "destination": {
-                "server": "https://94bbb167-b2f1-4698-96cd-e46b65ab129d.vultr-k8s.com:6443",
-                "namespace": "default"
-              },
-              "syncPolicy": {
-                "automated": {
-                  "prune": true,
-                  "selfHeal": true
-                }
-              }
-            }
-          }'
-
-      - name: Ensure ArgoCD Application for vke-94bbb167
-        run: |
-          curl -k --fail -X POST ${{ secrets.ARGOCD_SERVER }}/api/v1/applications \
+          curl -k --fail -X POST ${{ secrets.ARGOCD_SERVER }}/api/v1/applications/foobar-api-eu-west \
           -H "Authorization: Bearer ${{ secrets.ARGOCD_AUTH_TOKEN }}" \
           -H "Content-Type: application/json" \
           -d '{
-            "metadata": {
-              "name": "foobar-api-eu-west",
-              "namespace": "argo"
-            },
-            "spec": {
-              "project": "default",
-              "source": {
-                "repoURL": "git@github.com:paulohple/foobar-api.git",
-                "targetRevision": "HEAD",
-                "path": "kustomize/overlays/eu-west-cluster"
-              },
-              "destination": {
-                "server": "https://00e1b5e2-794e-4636-ad51-031cea0489f4.vultr-k8s.com:6443",
-                "namespace": "default"
-              },
-              "syncPolicy": {
-                "automated": {
-                  "prune": true,
-                  "selfHeal": true
+                "metadata": {
+                  "name": "foobar-api-eu-west",
+                  "namespace": "default"
+                },
+                "spec": {
+                  "project": "default",
+                  "source": {
+                    "repoURL": "git@github.com:paulohple/foobar-api.git",
+                    "targetRevision": "HEAD",
+                    "path": "kustomize/overlays/eu-west-cluster"
+                  },
+                  "destination": {
+                    "server": "https://00e1b5e2-794e-4636-ad51-031cea0489f4.vultr-k8s.com:6443",
+                    "namespace": "default"
+                  },
+                  "syncPolicy": {
+                    "automated": {
+                      "prune": true,
+                      "selfHeal": true
+                    }
+                  }
                 }
-              }
-            }
-          }'
+              }'
 
-      - name: Trigger ArgoCD Sync for vke-00e1b5e2
+      - name: Ensure ArgoCD Application for us-east-cluster
+        run: |
+          curl -k --fail -X POST ${{ secrets.ARGOCD_SERVER }}/api/v1/applications/foobar-api-us-east \
+          -H "Authorization: Bearer ${{ secrets.ARGOCD_AUTH_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          -d '{
+                "metadata": {
+                  "name": "foobar-api-us-east",
+                  "namespace": "default"
+                },
+                "spec": {
+                  "project": "default",
+                  "source": {
+                    "repoURL": "git@github.com:paulohple/foobar-api.git",
+                    "targetRevision": "HEAD",
+                    "path": "kustomize/overlays/us-east-cluster"
+                  },
+                  "destination": {
+                    "server": "https://94bbb167-b2f1-4698-96cd-e46b65ab129d.vultr-k8s.com:6443",
+                    "namespace": "default"
+                  },
+                  "syncPolicy": {
+                    "automated": {
+                      "prune": true,
+                      "selfHeal": true
+                    }
+                  }
+                }
+              }'
+
+      - name: Trigger ArgoCD Sync for Region 1
         run: |
           curl -k --fail -X POST ${{ secrets.ARGOCD_SERVER }}/api/v1/applications/foobar-api-eu-west/sync \
           -H "Authorization: Bearer ${{ secrets.ARGOCD_AUTH_TOKEN }}" \
           -H "Content-Type: application/json" \
           -d '{}'
 
-      - name: Trigger ArgoCD Sync for vke-94bbb167
+      - name: Trigger ArgoCD Sync for Region 2
         run: |
           curl -k --fail -X POST ${{ secrets.ARGOCD_SERVER }}/api/v1/applications/foobar-api-us-east/sync \
           -H "Authorization: Bearer ${{ secrets.ARGOCD_AUTH_TOKEN }}" \

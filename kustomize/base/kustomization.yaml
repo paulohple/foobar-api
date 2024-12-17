@@ -2,3 +2,7 @@ resources:
   - deployment.yaml
   - service.yaml
   - ingress.yaml
+
+images:
+  - name: sjc.vultrcr.com/globalregistry/foobar-api
+    newTag: latest # Será sobrescrito pela pipeline
