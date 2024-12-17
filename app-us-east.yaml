@@ -22,15 +22,17 @@ spec:
             - name: tls-secret
               mountPath: /cert
               readOnly: true
-          livenessProbe: # Checks if the container is alive
+          livenessProbe:
             httpGet:
+              scheme: HTTPS # Mudar para HTTPS
               path: /health
               port: 80
             initialDelaySeconds: 10
             periodSeconds: 5
             failureThreshold: 3
-          readinessProbe: # Checks if the container is ready to serve traffic
+          readinessProbe:
             httpGet:
+              scheme: HTTPS # Mudar para HTTPS
               path: /health
               port: 80
             initialDelaySeconds: 5
