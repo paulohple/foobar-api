@@ -109,9 +109,13 @@ jobs:
       - name: Trigger ArgoCD Sync for vke-00e1b5e2
         run: |
           curl -k --fail -X POST ${{ secrets.ARGOCD_SERVER }}/api/v1/applications/foobar-api-eu-west/sync \
-          -H "Authorization: Bearer ${{ secrets.ARGOCD_AUTH_TOKEN }}"
+          -H "Authorization: Bearer ${{ secrets.ARGOCD_AUTH_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          -d '{}'
 
       - name: Trigger ArgoCD Sync for vke-94bbb167
         run: |
           curl -k --fail -X POST ${{ secrets.ARGOCD_SERVER }}/api/v1/applications/foobar-api-us-east/sync \
-          -H "Authorization: Bearer ${{ secrets.ARGOCD_AUTH_TOKEN }}"
+          -H "Authorization: Bearer ${{ secrets.ARGOCD_AUTH_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          -d '{}'
