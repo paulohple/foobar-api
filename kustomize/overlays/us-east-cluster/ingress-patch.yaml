@@ -2,9 +2,59 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: foobar-api-ingress
+  namespace: default
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   rules:
-    - host: 45.77.200.202.nip.io
+    - host: 45.77.200.202.nip.io # Replace with your DNS name or IP if required
+      http:
+        paths:
+          - path: /data
+            pathType: Prefix
+            backend:
+              service:
+                name: foobar-api
+                port:
+                  number: 80
+          - path: /echo
+            pathType: Prefix
+            backend:
+              service:
+                name: foobar-api
+                port:
+                  number: 80
+          - path: /bench
+            pathType: Prefix
+            backend:
+              service:
+                name: foobar-api
+                port:
+                  number: 80
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: foobar-api
+                port:
+                  number: 80
+          - path: /health
+            pathType: Prefix
+            backend:
+              service:
+                name: foobar-api
+                port:
+                  number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: foobar-api
+                port:
+                  number: 80
   tls:
-    - hosts:
-        - 45.77.200.202.nip.io
+    - secretName: foobar-api-cert
+      hosts:
+        - 45.77.200.202.nip.io # Replace with a temporary DNS name or IP if needed
