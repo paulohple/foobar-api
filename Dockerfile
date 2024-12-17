@@ -13,11 +13,11 @@ RUN go mod download
 # Build the application
 RUN go build -o foobar-api .
 
-# Stage 2: Create a smaller image for runtime
-FROM alpine:latest
+# Stage 2: Use Debian Slim as runtime
+FROM debian:bullseye-slim
 
-# Install certificates for HTTPS (optional, if needed)
-RUN apk --no-cache add ca-certificates
+# Install certificates for HTTPS (optional)
+RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory inside the runtime container
 WORKDIR /app
