@@ -61,7 +61,7 @@ jobs:
               "source": {
                 "repoURL": "git@github.com:paulohple/foobar-api.git",
                 "targetRevision": "HEAD",
-                "path": "."
+                "path": "kustomize/overlays/us-east-cluster"
               },
               "destination": {
                 "server": "https://94bbb167-b2f1-4698-96cd-e46b65ab129d.vultr-k8s.com:6443",
@@ -91,7 +91,7 @@ jobs:
               "source": {
                 "repoURL": "git@github.com:paulohple/foobar-api.git",
                 "targetRevision": "HEAD",
-                "path": "."
+                "path": "kustomize/overlays/eu-west-cluster"
               },
               "destination": {
                 "server": "https://00e1b5e2-794e-4636-ad51-031cea0489f4.vultr-k8s.com:6443",

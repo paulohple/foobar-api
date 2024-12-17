@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: foobar-api
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: foobar-api
+  template:
+    metadata:
+      labels:
+        app: foobar-api
+    spec:
+      containers:
+        - name: foobar-api
+          image: sjc.vultrcr.com/globalregistry/foobar-api:latest
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: tls-secret
+              mountPath: /cert
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              scheme: HTTPS # Mudar para HTTPS
+              path: /health
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              scheme: HTTPS # Mudar para HTTPS
+              path: /health
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 3
+            failureThreshold: 3
+      volumes:
+        - name: tls-secret
+          secret:
+            secretName: foobar-api-cert
+            items:
+              - key: tls.crt
+                path: cert.pem
+              - key: tls.key
+                path: key.pem

@@ -1,0 +1,10 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: foobar-api-ingress
+spec:
+  rules:
+    - host: 217.69.13.219.nip.io
+  tls:
+    - hosts:
+        - 217.69.13.219.nip.io
