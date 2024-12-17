@@ -71,7 +71,7 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   rules:
-    - host: 136.244.118.141.nip.io # Replace with your DNS name or IP if required
+    - host: 217.69.13.219.nip.io # Replace with your DNS name or IP if required
       http:
         paths:
           - path: /data
@@ -119,4 +119,4 @@ spec:
   tls:
     - secretName: foobar-api-cert
       hosts:
-        - 136.244.118.141.nip.io # Replace with a temporary DNS name or IP if needed
+        - 217.69.13.219.nip.io # Replace with a temporary DNS name or IP if needed
