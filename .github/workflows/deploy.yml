@@ -54,6 +54,14 @@ jobs:
         with:
           commit_message: "Update image to tag ${{ env.TAG }} for foobar-api"
           file_pattern: "kustomize/overlays/eu-west-cluster/kustomization.yaml kustomize/overlays/us-east-cluster/kustomization.yaml"
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "github-actions[bot]@users.noreply.github.com"
+          commit_author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+          repository: .
+          push_options: "--force"
+          add_options: "-A"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Ensure ArgoCD Application for eu-west-cluster
         run: |
