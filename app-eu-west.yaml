@@ -40,6 +40,11 @@ spec:
         - name: tls-secret
           secret:
             secretName: foobar-api-cert
+            items:
+              - key: tls.crt
+                path: cert.pem
+              - key: tls.key
+                path: key.pem
 ---
 apiVersion: v1
 kind: Service
