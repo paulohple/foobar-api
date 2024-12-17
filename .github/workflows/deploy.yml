@@ -53,30 +53,30 @@ jobs:
           curl -k --fail -X POST ${{ secrets.ARGOCD_SERVER }}/api/v1/applications \
           -H "Authorization: Bearer ${{ secrets.ARGOCD_AUTH_TOKEN }}" \
           -H "Content-Type: application/json" \
-          -d '{
-                "metadata": {
-                  "name": "foobar-api-eu-west",
-                  "namespace": "default"
-                },
-                "spec": {
-                  "destination": {
-                    "server": "https://00e1b5e2-794e-4636-ad51-031cea0489f4.vultr-k8s.com:6443",
-                    "namespace": "default"
-                  },
-                  "source": {
-                    "repoURL": "${{ secrets.REPO_URL }}",
-                    "targetRevision": "HEAD",
-                    "path": "."
-                  },
-                  "project": "default",
-                  "syncPolicy": {
-                    "automated": {
-                      "prune": true,
-                      "selfHeal": true
-                    }
-                  }
+              -d '{
+            "metadata": {
+              "name": "foobar-api-us-east",
+              "namespace": "argo"
+            },
+            "spec": {
+              "project": "default",
+              "source": {
+                "repoURL": "git@github.com:paulohple/foobar-api.git",
+                "targetRevision": "HEAD",
+                "path": "."
+              },
+              "destination": {
+                "server": "https://94bbb167-b2f1-4698-96cd-e46b65ab129d.vultr-k8s.com:6443",
+                "namespace": "default"
+              },
+              "syncPolicy": {
+                "automated": {
+                  "prune": true,
+                  "selfHeal": true
                 }
-              }'
+              }
+            }
+          }'
 
       - name: Ensure ArgoCD Application for vke-94bbb167
         run: |
@@ -86,29 +86,29 @@ jobs:
           -H "Authorization: Bearer ${{ secrets.ARGOCD_AUTH_TOKEN }}" \
           -H "Content-Type: application/json" \
           -d '{
-                "metadata": {
-                  "name": "foobar-api-us-east",
-                  "namespace": "default"
-                },
-                "spec": {
-                  "destination": {
-                    "server": "https://94bbb167-b2f1-4698-96cd-e46b65ab129d.vultr-k8s.com:6443",
-                    "namespace": "default"
-                  },
-                  "source": {
-                    "repoURL": "${{ secrets.REPO_URL }}",
-                    "targetRevision": "HEAD",
-                    "path": "."
-                  },
-                  "project": "default",
-                  "syncPolicy": {
-                    "automated": {
-                      "prune": true,
-                      "selfHeal": true
-                    }
-                  }
+            "metadata": {
+              "name": "foobar-api-eu-west",
+              "namespace": "argo"
+            },
+            "spec": {
+              "project": "default",
+              "source": {
+                "repoURL": "git@github.com:paulohple/foobar-api.git",
+                "targetRevision": "HEAD",
+                "path": "."
+              },
+              "destination": {
+                "server": "https://00e1b5e2-794e-4636-ad51-031cea0489f4.vultr-k8s.com:6443",
+                "namespace": "default"
+              },
+              "syncPolicy": {
+                "automated": {
+                  "prune": true,
+                  "selfHeal": true
                 }
-              }'
+              }
+            }
+          }'
 
       - name: Trigger ArgoCD Sync for vke-00e1b5e2
         run: |
