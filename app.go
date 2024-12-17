@@ -65,16 +65,16 @@ func main() {
 		Addr: ":" + port,
 	}
 
-	_, err := os.Stat("./cert/cert.pem")
+	_, err := os.Stat("/cert/cert.pem")
 	if err != nil {
 		log.Fatal("You need to provide a certificate")
 	}
 
-	_, err = os.Stat("./cert/key.pem")
+	_, err = os.Stat("/cert/key.pem")
 	if err != nil {
 		log.Fatal("You need to provide a certificate")
 	}
-	log.Fatal(server.ListenAndServeTLS("./cert/cert.pem", "./cert/key.pem"))
+	log.Fatal(server.ListenAndServeTLS("/cert/cert.pem", "/cert/key.pem"))
 }
 
 func setupMutualTLS(ca string) *tls.Config {

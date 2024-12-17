@@ -1,0 +1,56 @@
+name: CI/CD Pipeline - Deploy to ArgoCD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    name: Build and Push to Vultr Registry
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Login to Vultr Registry
+        run: echo "${{ secrets.VULTR_PASSWORD }}" | docker login sjc.vultrcr.com -u "${{ secrets.VULTR_USERNAME }}" --password-stdin
+
+      - name: Build Docker Image
+        run: |
+          docker build -t sjc.vultrcr.com/globalregistry/foobar-api:latest .
+
+      - name: Push Docker Image to Registry
+        run: |
+          docker push sjc.vultrcr.com/globalregistry/foobar-api:latest
+
+  deploy:
+    name: Deploy to ArgoCD
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Manifests
+        uses: actions/checkout@v4
+
+      - name: Update Image in Manifests
+        run: |
+          sed -i 's|image:.*|image: sjc.vultrcr.com/globalregistry/foobar-api:latest|' app-eu-west.yaml
+          sed -i 's|image:.*|image: sjc.vultrcr.com/globalregistry/foobar-api:latest|' app-us-east.yaml
+
+      - name: Commit and Push Changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Update image to latest for foobar-api"
+          file_pattern: "app-eu-west.yaml app-us-east.yaml"
+
+      - name: Trigger ArgoCD Sync for eu-west
+        run: |
+          curl -k -X POST ${{ secrets.ARGOCD_SERVER }}/api/v1/applications/foobar-api-eu-west/sync \
+          -H "Authorization: Bearer ${{ secrets.ARGOCD_AUTH_TOKEN }}"
+
+      - name: Trigger ArgoCD Sync for us-east
+        run: |
+          curl -k -X POST ${{ secrets.ARGOCD_SERVER }}/api/v1/applications/foobar-api-us-east/sync \
+          -H "Authorization: Bearer ${{ secrets.ARGOCD_AUTH_TOKEN }}"
