@@ -6,10 +6,9 @@ metadata:
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls.passthrough: "true"
-    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   rules:
-    - host: PLACEHOLDER # Replace with your DNS name or IP if required
+    - host: PLACEHOLDER
       http:
         paths:
           - path: /
@@ -19,7 +18,3 @@ spec:
                 name: foobar-api
                 port:
                   number: 80
-  tls:
-    - secretName: foobar-api-cert
-      hosts:
-        - PLACEHOLDER # Replace with a temporary DNS name or IP if needed
