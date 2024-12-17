@@ -48,8 +48,6 @@ jobs:
 
       - name: Ensure ArgoCD Application for vke-00e1b5e2
         run: |
-          curl -k -X GET ${{ secrets.ARGOCD_SERVER }}/api/v1/applications/foobar-api-eu-west \
-          -H "Authorization: Bearer ${{ secrets.ARGOCD_AUTH_TOKEN }}" || \
           curl -k --fail -X POST ${{ secrets.ARGOCD_SERVER }}/api/v1/applications \
           -H "Authorization: Bearer ${{ secrets.ARGOCD_AUTH_TOKEN }}" \
           -H "Content-Type: application/json" \
@@ -80,8 +78,6 @@ jobs:
 
       - name: Ensure ArgoCD Application for vke-94bbb167
         run: |
-          curl -k -X GET ${{ secrets.ARGOCD_SERVER }}/api/v1/applications/foobar-api-us-east \
-          -H "Authorization: Bearer ${{ secrets.ARGOCD_AUTH_TOKEN }}" || \
           curl -k --fail -X POST ${{ secrets.ARGOCD_SERVER }}/api/v1/applications \
           -H "Authorization: Bearer ${{ secrets.ARGOCD_AUTH_TOKEN }}" \
           -H "Content-Type: application/json" \
