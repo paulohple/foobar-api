@@ -46,9 +46,9 @@ jobs:
           commit_message: "Update image to latest for foobar-api"
           file_pattern: "app-eu-west.yaml app-us-east.yaml"
 
-      - name: Create ArgoCD Application for vke-00e1b5e2
+      - name: Ensure ArgoCD Application for vke-00e1b5e2
         run: |
-          curl -k -X POST ${{ secrets.ARGOCD_SERVER }}/api/v1/applications \
+          curl -k --fail -X POST ${{ secrets.ARGOCD_SERVER }}/api/v1/applications \
           -H "Authorization: Bearer ${{ secrets.ARGOCD_AUTH_TOKEN }}" \
           -H "Content-Type: application/json" \
           -d '{
@@ -74,11 +74,11 @@ jobs:
                     }
                   }
                 }
-              }'
+              }' || echo "Application foobar-api-eu-west already exists"
 
-      - name: Create ArgoCD Application for vke-94bbb167
+      - name: Ensure ArgoCD Application for vke-94bbb167
         run: |
-          curl -k -X POST ${{ secrets.ARGOCD_SERVER }}/api/v1/applications \
+          curl -k --fail -X POST ${{ secrets.ARGOCD_SERVER }}/api/v1/applications \
           -H "Authorization: Bearer ${{ secrets.ARGOCD_AUTH_TOKEN }}" \
           -H "Content-Type: application/json" \
           -d '{
@@ -104,14 +104,14 @@ jobs:
                     }
                   }
                 }
-              }'
+              }' || echo "Application foobar-api-us-east already exists"
 
       - name: Trigger ArgoCD Sync for vke-00e1b5e2
         run: |
-          curl -k -X POST ${{ secrets.ARGOCD_SERVER }}/api/v1/applications/foobar-api-eu-west/sync \
+          curl -k --fail -X POST ${{ secrets.ARGOCD_SERVER }}/api/v1/applications/foobar-api-eu-west/sync \
           -H "Authorization: Bearer ${{ secrets.ARGOCD_AUTH_TOKEN }}"
 
       - name: Trigger ArgoCD Sync for vke-94bbb167
         run: |
-          curl -k -X POST ${{ secrets.ARGOCD_SERVER }}/api/v1/applications/foobar-api-us-east/sync \
+          curl -k --fail -X POST ${{ secrets.ARGOCD_SERVER }}/api/v1/applications/foobar-api-us-east/sync \
           -H "Authorization: Bearer ${{ secrets.ARGOCD_AUTH_TOKEN }}"
