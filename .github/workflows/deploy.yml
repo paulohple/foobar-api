@@ -53,7 +53,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Update image to tag ${{ env.TAG }} for foobar-api"
-          file_pattern: "kustomize/overlays/eu-east-cluster/kustomization.yaml kustomize/overlays/eu-west-cluster/kustomization.yaml"
+          file_pattern: "kustomize/overlays/eu-west-cluster/kustomization.yaml kustomize/overlays/us-east-cluster/kustomization.yaml"
 
       - name: Ensure ArgoCD Application for eu-west-cluster
         run: |
@@ -115,14 +115,14 @@ jobs:
               }
             }'
 
-      - name: Trigger ArgoCD Sync for Region 1
+      - name: Trigger ArgoCD Sync for eu-west-cluster
         run: |
           curl -k --fail -X POST ${{ secrets.ARGOCD_SERVER }}/api/v1/applications/foobar-api-eu-west/sync \
           -H "Authorization: Bearer ${{ secrets.ARGOCD_AUTH_TOKEN }}" \
           -H "Content-Type: application/json" \
           -d '{}'
 
-      - name: Trigger ArgoCD Sync for Region 2
+      - name: Trigger ArgoCD Sync for us-east-cluster
         run: |
           curl -k --fail -X POST ${{ secrets.ARGOCD_SERVER }}/api/v1/applications/foobar-api-us-east/sync \
           -H "Authorization: Bearer ${{ secrets.ARGOCD_AUTH_TOKEN }}" \
