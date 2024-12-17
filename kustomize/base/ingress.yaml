@@ -5,49 +5,13 @@ metadata:
   namespace: default
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
-    traefik.ingress.kubernetes.io/router.tls: "true"
-    traefik.ingress.kubernetes.io/router.pathmatcher: PathPrefix
+    traefik.ingress.kubernetes.io/router.tls.passthrough: "true"
     cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   rules:
     - host: PLACEHOLDER # Replace with your DNS name or IP if required
       http:
         paths:
-          - path: /data
-            pathType: Prefix
-            backend:
-              service:
-                name: foobar-api
-                port:
-                  number: 80
-          - path: /echo
-            pathType: Prefix
-            backend:
-              service:
-                name: foobar-api
-                port:
-                  number: 80
-          - path: /bench
-            pathType: Prefix
-            backend:
-              service:
-                name: foobar-api
-                port:
-                  number: 80
-          - path: /api
-            pathType: Prefix
-            backend:
-              service:
-                name: foobar-api
-                port:
-                  number: 80
-          - path: /health
-            pathType: Prefix
-            backend:
-              service:
-                name: foobar-api
-                port:
-                  number: 80
           - path: /
             pathType: Prefix
             backend:
