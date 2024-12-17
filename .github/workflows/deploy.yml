@@ -58,10 +58,14 @@ jobs:
           commit_user_email: "github-actions[bot]@users.noreply.github.com"
           commit_author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
           repository: .
-          push_options: "--force"
+          push_options: "--force-with-lease"
           add_options: "-A"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull Latest Changes Before Push
+        run: |
+          git pull --rebase origin main
 
       - name: Ensure ArgoCD Application for eu-west-cluster
         run: |
