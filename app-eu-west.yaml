@@ -17,7 +17,7 @@ spec:
         - name: foobar-api
           image: sjc.vultrcr.com/globalregistry/foobar-api:latest
           ports:
-            - containerPort: 8080
+            - containerPort: 80
           volumeMounts:
             - name: tls-secret
               mountPath: /cert
@@ -25,14 +25,14 @@ spec:
           livenessProbe: # Checks if the container is alive
             httpGet:
               path: /health
-              port: 8080
+              port: 80
             initialDelaySeconds: 10
             periodSeconds: 5
             failureThreshold: 3
           readinessProbe: # Checks if the container is ready to serve traffic
             httpGet:
               path: /health
-              port: 8080
+              port: 80
             initialDelaySeconds: 5
             periodSeconds: 3
             failureThreshold: 3
@@ -56,8 +56,8 @@ spec:
     app: foobar-api
   ports:
     - protocol: TCP
-      port: 8080
-      targetPort: 8080
+      port: 80
+      targetPort: 80
   type: ClusterIP
 ---
 apiVersion: networking.k8s.io/v1
@@ -80,42 +80,42 @@ spec:
               service:
                 name: foobar-api
                 port:
-                  number: 8080
+                  number: 80
           - path: /echo
             pathType: Prefix
             backend:
               service:
                 name: foobar-api
                 port:
-                  number: 8080
+                  number: 80
           - path: /bench
             pathType: Prefix
             backend:
               service:
                 name: foobar-api
                 port:
-                  number: 8080
+                  number: 80
           - path: /api
             pathType: Prefix
             backend:
               service:
                 name: foobar-api
                 port:
-                  number: 8080
+                  number: 80
           - path: /health
             pathType: Prefix
             backend:
               service:
                 name: foobar-api
                 port:
-                  number: 8080
+                  number: 80
           - path: /
             pathType: Prefix
             backend:
               service:
                 name: foobar-api
                 port:
-                  number: 8080
+                  number: 80
   tls:
     - secretName: foobar-api-cert
       hosts:
