@@ -83,11 +83,11 @@ Similar to the `us-east` cluster, this cluster is also dedicated exclusively to 
 
 Tiny Go webserver that prints os information and HTTP request to output
 
+---
+
 ### How to Secure a VKE Cluster Using Traefik, Cert-Manager, and Let's Encrypt
 
 This guide provides a step-by-step approach to securing a Vultr Kubernetes Engine (VKE) cluster using Traefik, Cert-Manager, and Let's Encrypt for TLS management. It also includes details about setting up monitoring with Prometheus and integrating ArgoCD for GitOps.
-
----
 
 ### Documentation References
 
