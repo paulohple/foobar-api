@@ -1,0 +1,26 @@
+configs:
+  params:
+    server.insecure: true
+global:
+  domain: argocd.144.202.101.170.nip.io
+server:
+  ingress:
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      kubernetes.io/ingress.class: traefik
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    enabled: true
+    hosts:
+      - argocd.144.202.101.170.nip.io
+    ingressClassName: traefik
+    tls:
+      - hosts:
+          - argocd.144.202.101.170.nip.io
+        secretName: argocd-server-tls
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi

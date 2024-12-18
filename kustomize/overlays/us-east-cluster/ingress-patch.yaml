@@ -7,8 +7,9 @@ metadata:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls.passthrough: "true"
 spec:
+  ingressClassName: traefik
   rules:
-    - host: 45.77.154.12.nip.io
+    - host: newyork-cluster.45.77.154.12.nip.io
       http:
         paths:
           - path: /

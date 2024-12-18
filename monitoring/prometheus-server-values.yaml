@@ -1,0 +1,46 @@
+prometheus:
+  prometheusSpec:
+    enableRemoteWriteReceiver: true
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - prometheus.144.202.101.170.nip.io
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    tls:
+      - secretName: prometheus-tls
+        hosts:
+          - prometheus.144.202.101.170.nip.io
+  resources:
+    limits:
+      cpu: 200m
+      memory: 356Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  retention: 2h # Reduce the impact of remote write.
+  tsdb:
+    outOfOrderTimeWindow: 24h # Allow out-of-order samples, NTP issue.
+
+grafana:
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - grafana.144.202.101.170.nip.io
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    tls:
+      - secretName: grafana-tls
+        hosts:
+          - grafana.144.202.101.170.nip.io
+  resources:
+    limits:
+      cpu: 200m
+      memory: 356Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  adminPassword: "MySecurePass"

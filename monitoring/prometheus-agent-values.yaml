@@ -1,0 +1,178 @@
+prometheus:
+  prometheusSpec:
+    enableFeatures:
+      - agent
+    # Definir requests e limits para o Prometheus em modo agente
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+
+    remoteWrite:
+      - url: "https://prometheus.144.202.101.170.nip.io/api/v1/write"
+        queueConfig: # Reduce the impact of remote write.
+          minShards: 1 # Use only 1 shard
+          maxShards: 1 # Prevent resharding
+          capacity: 2000 # Reduce queue capacity
+          batchSendDeadline: 10s # Increase send timeout for batching
+          maxSamplesPerSend: 500 # Limit batch size
+          maxRetries: 2 # Reduce retries to minimize overhead
+
+    scrapeInterval: 25s
+    scrapeTimeout: 15s
+
+    additionalScrapeConfigs:
+      # Node Exporter
+      - job_name: "node-exporter"
+        honor_timestamps: false # NTP issue.
+        scrape_interval: 45s # Reduce the impact of remote write.
+        static_configs:
+          - targets:
+              [
+                "prometheus-agent-prometheus-node-exporter.mon.svc.cluster.local:9100",
+              ]
+        metric_relabel_configs:
+          - action: drop
+            regex: "node_filesystem_(.*)_bytes"
+            source_labels: [__name__]
+          - action: drop
+            regex: "node_network_(.*)_bytes_total"
+            source_labels: [__name__]
+
+      # Kube-State-Metrics
+      - job_name: "kube-state-metrics"
+        honor_timestamps: false
+        scrape_interval: 45s
+        static_configs:
+          - targets:
+              ["prometheus-agent-kube-state-metrics.mon.svc.cluster.local:8080"]
+        metric_relabel_configs:
+          - action: drop
+            regex: "kube_pod_container_status_terminated_reason"
+            source_labels: [__name__]
+          - action: drop
+            regex: "kube_pod_container_state_.*"
+            source_labels: [__name__]
+
+      # Alertmanager
+      - job_name: "alertmanager"
+        honor_timestamps: false
+        scrape_interval: 60s
+        static_configs:
+          - targets:
+              [
+                "prometheus-agent-kube-prom-alertmanager.mon.svc.cluster.local:9093",
+              ]
+        metric_relabel_configs:
+          - action: drop
+            regex: "alertmanager_http_requests_total"
+            source_labels: [__name__]
+
+      # API Server
+      - job_name: "kube-apiserver"
+        honor_timestamps: false
+        scrape_interval: 30s
+        static_configs:
+          - targets:
+              ["prometheus-agent-kube-prom-apiserver.mon.svc.cluster.local:443"]
+        metric_relabel_configs:
+          - action: drop
+            regex: "apiserver_request_.*"
+            source_labels: [__name__]
+
+      # Controller Manager
+      - job_name: "kube-controller-manager"
+        honor_timestamps: false
+        scrape_interval: 60s
+        static_configs:
+          - targets:
+              [
+                "prometheus-agent-kube-prom-kube-controller-manager.mon.svc.cluster.local:10257",
+              ]
+        metric_relabel_configs:
+          - action: drop
+            regex: "controller_runtime_(.*)"
+            source_labels: [__name__]
+
+      # Scheduler
+      - job_name: "kube-scheduler"
+        honor_timestamps: false
+        scrape_interval: 60s
+        static_configs:
+          - targets:
+              [
+                "prometheus-agent-kube-prom-kube-scheduler.mon.svc.cluster.local:10259",
+              ]
+        metric_relabel_configs:
+          - action: drop
+            regex: "scheduler_schedule_attempts_total"
+            source_labels: [__name__]
+
+      # CoreDNS
+      - job_name: "coredns"
+        honor_timestamps: false
+        scrape_interval: 60s
+        static_configs:
+          - targets:
+              ["prometheus-agent-kube-prom-coredns.mon.svc.cluster.local:9153"]
+        metric_relabel_configs:
+          - action: drop
+            regex: "coredns_dns_request_duration_seconds"
+            source_labels: [__name__]
+
+      # Kube Proxy
+      - job_name: "kube-proxy"
+        honor_timestamps: false
+        scrape_interval: 60s
+        static_configs:
+          - targets:
+              [
+                "prometheus-agent-kube-prom-kube-proxy.mon.svc.cluster.local:10249",
+              ]
+        metric_relabel_configs:
+          - action: drop
+            regex: "kubeproxy_(.*)"
+            source_labels: [__name__]
+
+      # etcd
+      - job_name: "kube-etcd"
+        honor_timestamps: false
+        scrape_interval: 60s
+        static_configs:
+          - targets:
+              [
+                "prometheus-agent-kube-prom-kube-etcd.mon.svc.cluster.local:2379",
+              ]
+        metric_relabel_configs:
+          - action: drop
+            regex: "etcd_disk_(.*)"
+            source_labels: [__name__]
+
+      # Operator
+      - job_name: "kube-operator"
+        honor_timestamps: false
+        scrape_interval: 60s
+        static_configs:
+          - targets:
+              ["prometheus-agent-kube-prom-operator.mon.svc.cluster.local:8080"]
+        metric_relabel_configs:
+          - action: drop
+            regex: "operator_reconcile_(.*)"
+            source_labels: [__name__]
+
+      # Prometheus Itself
+      - job_name: "prometheus"
+        honor_timestamps: false
+        scrape_interval: 60s
+        static_configs:
+          - targets:
+              [
+                "prometheus-agent-kube-prom-prometheus.mon.svc.cluster.local:9090",
+              ]
+        metric_relabel_configs:
+          - action: drop
+            regex: "prometheus_http_requests_total"
+            source_labels: [__name__]
