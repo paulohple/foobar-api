@@ -98,6 +98,8 @@ This guide provides a step-by-step approach to securing a Vultr Kubernetes Engin
 - [New Relic Prometheus Agent](https://docs.newrelic.com/docs/infrastructure/prometheus-integrations/install-configure-prometheus-agent/setup-prometheus-agent/)
 - [ArgoCD GitHub Issues](https://github.com/argoproj/argo-cd/issues/9422)
 
+---
+
 ### Architecture Overview
 
 Below are visual representations of the architecture components used in this project:
