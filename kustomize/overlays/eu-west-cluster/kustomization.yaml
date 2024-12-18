@@ -2,9 +2,11 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - ../../base
+- ../../base
 
 patchesStrategicMerge:
-  - certificate-eu-patch.yaml
-  - ingress-eu-patch.yaml
-  - ingressroute-eu-patch.yaml
+- certificate-eu-patch.yaml
+- ingress-eu-patch.yaml
+- ingressroute-eu-patch.yaml
+images:
+- name: sjc.vultrcr.com/globalregistry/foobar-api
