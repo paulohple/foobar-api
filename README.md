@@ -82,3 +82,7 @@ The project consists of three clusters: `tooling`, `us-east`, and `eu-west`, eac
 ### Container Registry
 
 ![Container Registry](images/registry.jpg)
+
+### ArgoCD
+
+![ArgoCD](images/argocd.jpg)

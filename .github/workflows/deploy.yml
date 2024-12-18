@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "kustomize/**"
   workflow_dispatch: # Enables manual trigger
 
 jobs:
