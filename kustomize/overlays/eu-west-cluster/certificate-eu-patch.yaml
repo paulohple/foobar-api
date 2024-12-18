@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: foobar-api-cert
+  namespace: default
+spec:
+  secretName: foobar-api-cert
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - paris-cluster.95.179.208.170.nip.io

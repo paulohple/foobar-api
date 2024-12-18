@@ -43,4 +43,4 @@ grafana:
     requests:
       cpu: 100m
       memory: 128Mi
-  adminPassword: "MySecurePass"
+  adminPassword: "your-pass-here"

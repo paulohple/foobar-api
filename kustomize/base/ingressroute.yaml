@@ -1,0 +1,15 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: foobar-api-tcp
+  namespace: default
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: PLACEHOLDER
+      services:
+        - name: foobar-api
+          port: 80
+  tls:
+    passthrough: true

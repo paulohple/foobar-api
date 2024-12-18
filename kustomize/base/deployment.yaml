@@ -24,7 +24,7 @@ spec:
               readOnly: true
           livenessProbe:
             httpGet:
-              scheme: HTTPS # Mudar para HTTPS
+              scheme: HTTPS
               path: /health
               port: 80
             initialDelaySeconds: 10
@@ -32,7 +32,7 @@ spec:
             failureThreshold: 3
           readinessProbe:
             httpGet:
-              scheme: HTTPS # Mudar para HTTPS
+              scheme: HTTPS
               path: /health
               port: 80
             initialDelaySeconds: 5

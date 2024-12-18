@@ -9,4 +9,4 @@ spec:
     name: letsencrypt-prod
     kind: ClusterIssuer
   dnsNames:
-    - paris-cluster.95.179.208.170.nip.io # Seu domínio
+    - PLACEHOLDER
