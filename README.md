@@ -1,6 +1,6 @@
 # Description
 
-## Problem Analysis
+### Problem Analysis
 
 The scenario is as follows:
 
@@ -15,7 +15,7 @@ The scenario is as follows:
 
 ---
 
-## Using nip.io for DNS
+### Using nip.io for DNS
 
 The public DNS service nip.io was used to avoid managing a custom DNS. It enables the creation of subdomains that automatically resolve to a specified IP based on the hostname.
 
@@ -44,6 +44,38 @@ If the LoadBalancer IP is 144.202.101.170, hostnames can be created like:
 - This certificate is copied via volume mounts.
 - The main Pod mounts the volume and reads `cert.pem` and `key.pem`.
 - The Ingress does TLS passthrough.
+
+---
+
+### Architecture Overview
+
+### 1. Tooling Cluster
+
+Leverages the **Kube Prometheus Stack** for centralized monitoring and logging across clusters. Key components include:
+
+- **Prometheus Operator**: Manages Prometheus, Alertmanager, and other monitoring components.
+- **Grafana**: Provides dashboards and visualizations by retrieving data from Prometheus and Loki.
+- **Loki**: Acts as the centralized log aggregator for all clusters.
+
+### ArgoCD Integration
+
+- **ArgoCD Deployment**: Acts as the deployment hub for `us-east` and `eu-west` clusters. Utilizes service accounts installed in those clusters to manage deployments. ArgoCD ensures consistent and automated delivery of applications across clusters, providing a unified deployment pipeline.
+
+### 2. us-east Cluster
+
+This cluster is dedicated exclusively to running applications. It includes the following components:
+
+- **Deployments**:
+  - `node_exporter` for node-level metrics.
+  - `Prometheus Agent` operating in "agent" mode to forward metrics via `remote_write` to the centralized Prometheus in the tooling cluster.
+
+### 3. eu-west Cluster
+
+Similar to the `us-east` cluster, this cluster is also dedicated exclusively to running applications. It includes the following components:
+
+- **Deployments**:
+  - `node_exporter` for node-level metrics.
+  - `Prometheus Agent` (optional) in "agent" mode for metrics forwarding.
 
 ---
 
